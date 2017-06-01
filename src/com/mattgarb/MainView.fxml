@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.collections.FXCollections?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import java.lang.*?>
+<BorderPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="600.0"
+            prefWidth="1000.0" xmlns="http://javafx.com/javafx/8.0.112" xmlns:fx="http://javafx.com/fxml/1"
+            fx:controller="com.mattgarb.Controller">
+   <top>
+      <HBox fx:id="MenuBar" BorderPane.alignment="CENTER">
+         <ComboBox fx:id="encryptionMode" prefHeight="31.0" prefWidth="205.0" promptText="Encryption Mode">
+            <items>
+               <FXCollections fx:factory="observableArrayList">
+                  <String fx:value="Rotation" />
+                  <String fx:value="Route" />
+                  <String fx:value="Base64" />
+                  <String fx:value="Vigenere" />
+                  <String fx:value="AutoKey" />
+               </FXCollections>
+            </items>
+         </ComboBox>
+         <ComboBox fx:id="RotNumber" prefHeight="31.0" prefWidth="103.0" />
+         <TextField fx:id="Psk" prefHeight="31.0" prefWidth="188.0" />
+         <Region prefHeight="0.0" prefWidth="182.0" HBox.hgrow="ALWAYS" />
+         <Button fx:id="Stats" maxHeight="31.0" mnemonicParsing="false" prefWidth="110.0" text="Stats" />
+         <Button fx:id="Crack" mnemonicParsing="false" prefHeight="31.0" prefWidth="110.0" text="Crack" />
+      </HBox>
+   </top>
+   <center>
+      <HBox prefHeight="100.0" prefWidth="200.0" BorderPane.alignment="CENTER">
+         <TextArea fx:id="PlainText" prefHeight="200.0" prefWidth="200.0"
+                   text="A B C D E F G H I J K L M N O P Q R S T U V W X Y Z" wrapText="true" HBox.hgrow="ALWAYS" />
+         <TextArea fx:id="CipherText" prefHeight="200.0" prefWidth="200.0" wrapText="true" HBox.hgrow="ALWAYS" />
+      </HBox>
+   </center>
+   <bottom>
+      <HBox fx:id="Bottom">
+      </HBox>
+   </bottom>
+</BorderPane>
