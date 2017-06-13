@@ -86,40 +86,58 @@ public class Controller {
     }
 
     private void decrypt() {
-        if("Rotation".equals(encryptionMode.getSelectionModel().getSelectedItem())){
-            PlainText.setText(Main.rotate(CipherText.getText(),
-                    26 - RotNumber.getSelectionModel().getSelectedIndex()));
-        } else if("Vigenere".equals(encryptionMode.getSelectionModel().getSelectedItem())) {
-            PlainText.setText(Vigenere.decrypt(CipherText.getText(),Main.onlyLowerLetters(Psk.getText())));
-        } else if("AutoKey".equals(encryptionMode.getSelectionModel().getSelectedItem())) {
-            PlainText.setText(AutoKey.decrypt(CipherText.getText(),Main.onlyLowerLetters(Psk.getText())));
-        } else if("Base64".equals(encryptionMode.getSelectionModel().getSelectedItem())) {
-            PlainText.setText(Main.base64Decode(CipherText.getText()));
-        } else if("Column".equals(encryptionMode.getSelectionModel().getSelectedItem())) {
-            PlainText.setText(ColumnTransposition.decrypt(CipherText.getText(),Psk.getText()));
-        } else if("Route".equals(encryptionMode.getSelectionModel().getSelectedItem())) {
-            PlainText.setText(Route.decrypt(CipherText.getText(),RotNumber.getSelectionModel().getSelectedIndex()));
-        } else {
-            PlainText.setText(CipherText.getText());
+        String encryption = encryptionMode.getSelectionModel().isEmpty() ? "none"
+                : encryptionMode.getSelectionModel().getSelectedItem();
+        switch (encryption) {
+            case "Rotation":
+                PlainText.setText(Main.rotate(CipherText.getText(),
+                        26 - RotNumber.getSelectionModel().getSelectedIndex()));
+                break;
+            case "Vigenere":
+                PlainText.setText(Vigenere.decrypt(CipherText.getText(),Main.onlyLowerLetters(Psk.getText())));
+                break;
+            case "AutoKey":
+                PlainText.setText(AutoKey.decrypt(CipherText.getText(),Main.onlyLowerLetters(Psk.getText())));
+                break;
+            case "Base64":
+                PlainText.setText(Main.base64Decode(CipherText.getText()));
+                break;
+            case "Column":
+                PlainText.setText(ColumnTransposition.decrypt(CipherText.getText(),Psk.getText()));
+                break;
+            case "Route":
+                PlainText.setText(Route.decrypt(CipherText.getText(),RotNumber.getSelectionModel().getSelectedIndex()));
+                break;
+            default:
+                PlainText.setText(CipherText.getText());
         }
         updateCharts();
     }
 
     private void encrypt() {
-        if("Rotation".equals(encryptionMode.getSelectionModel().getSelectedItem())){
-            CipherText.setText(Main.rotate(PlainText.getText(),RotNumber.getSelectionModel().getSelectedIndex()));
-        } else if("Vigenere".equals(encryptionMode.getSelectionModel().getSelectedItem())) {
-            CipherText.setText(Vigenere.encrypt(PlainText.getText(),Main.onlyLowerLetters(Psk.getText())));
-        } else if("AutoKey".equals(encryptionMode.getSelectionModel().getSelectedItem())) {
-            CipherText.setText(AutoKey.encrypt(PlainText.getText(),Main.onlyLowerLetters(Psk.getText())));
-        } else if("Base64".equals(encryptionMode.getSelectionModel().getSelectedItem())) {
-            CipherText.setText(Main.base64(PlainText.getText()));
-        } else if("Column".equals(encryptionMode.getSelectionModel().getSelectedItem())) {
-            CipherText.setText(ColumnTransposition.encrypt(PlainText.getText(),Psk.getText()));
-        } else if("Route".equals(encryptionMode.getSelectionModel().getSelectedItem())) {
-            CipherText.setText(Route.encrypt(PlainText.getText(),RotNumber.getSelectionModel().getSelectedIndex()));
-        } else {
-            CipherText.setText(PlainText.getText());
+        String encryption = encryptionMode.getSelectionModel().isEmpty() ? "none"
+                : encryptionMode.getSelectionModel().getSelectedItem();
+        switch (encryption) {
+            case "Rotation":
+                CipherText.setText(Main.rotate(PlainText.getText(),RotNumber.getSelectionModel().getSelectedIndex()));
+                break;
+            case "Vigenere":
+                CipherText.setText(Vigenere.encrypt(PlainText.getText(),Main.onlyLowerLetters(Psk.getText())));
+                break;
+            case "AutoKey":
+                CipherText.setText(AutoKey.encrypt(PlainText.getText(),Main.onlyLowerLetters(Psk.getText())));
+                break;
+            case "Base64":
+                CipherText.setText(Main.base64(PlainText.getText()));
+                break;
+            case "Column":
+                CipherText.setText(ColumnTransposition.encrypt(PlainText.getText(),Psk.getText()));
+                break;
+            case "Route":
+                CipherText.setText(Route.encrypt(PlainText.getText(),RotNumber.getSelectionModel().getSelectedIndex()));
+                break;
+            default:
+                CipherText.setText(PlainText.getText());
         }
         updateCharts();
     }
