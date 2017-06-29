@@ -13,19 +13,15 @@ import java.util.*;
 
 public class Main extends Application {
 
-    /**
-     *  I use a hash set data structure for O(1) lookup of words.
-     */
     private static HashSet<String> wordSet = new HashSet<>();
     static HashSet<String> passSet = new HashSet<>();
 
     @Override
     public void start(Stage primaryStage) throws Exception{
         new Thread(new ImportSets()).start();
-        Parent root = FXMLLoader.load(getClass().getResource("MainView.fxml"));
+        Parent root = FXMLLoader.load(getClass().getResource("../../view/MainView.fxml"));
         primaryStage.setTitle("Ciphers");
         Scene scene = new Scene(root, 1000, 700);
-        scene.getStylesheets().add("com/mattgarb/Style.css");
         primaryStage.setScene(scene);
         primaryStage.show();
     }

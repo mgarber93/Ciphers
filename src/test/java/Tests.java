@@ -1,13 +1,11 @@
-package tests;
-
 import com.mattgarb.*;
 import org.junit.Test;
 
 import static org.junit.Assert.assertEquals;
 
 /**
- * Created by mattg on 5/6/2017.
- * This is the JUnit Test root.
+ * Created by m on 6/29/17.
+ * JUnit 4.11 test coverage.
  */
 public class Tests {
 
@@ -17,14 +15,14 @@ public class Tests {
         String str13 = "Uryyb Jbeyq guvf vf na rknzcyr bs ebg 13.";
         String str14 = "Vszzc Kcfzr hvwg wg ob sloadzs ct fch 14.";
         String str20 = "[]uxezdb a kyLKLauixzed !#$!# XZUAUBL UEMXZA lin 20";
-
-        assertEquals("",Main.rotate("",13));
+        assertEquals("", Main.rotate("",13));
         assertEquals(str13,Main.rotate(str13,0));
         assertEquals(str13,Main.rotate(str13,26));
         assertEquals(str13,Main.rotate("Hello World this is an example of rot 13.",13));
         assertEquals(str14,Main.rotate("Hello World this is an example of rot 14.",14));
         assertEquals(str20,Main.rotate("[]adkfjh g qeRQRgaodfkj !#$!# DFAGAHR AKSDFG rot 20",20));
     }
+
 
     //https://en.wikipedia.org/wiki/Base64
     @Test
@@ -63,8 +61,7 @@ public class Tests {
                 new Integer[]{4, 2, 5, 3, 1}));
         assertEquals("preshared keyword",cipher,ColumnTransposition.encrypt(plain, "dbECA"));
         //failing test!
-        //assertEquals("decrypt by array",plain, ColumnTransposition.decrypt(cipher,
-        //        new Integer[]{4, 2, 5, 3, 1}));
+        assertEquals("decrypt by array", plain, ColumnTransposition.decrypt(cipher, new Integer[]{4, 2, 5, 3, 1}));
     }
 
     @Test
@@ -91,7 +88,7 @@ public class Tests {
 
         String blankMapIn =  "A B C D E F G H I J K L M N O P Q R S T U V W X Y Z";
         String blankMapOut = "A C E G I K M O Q S U W Y " +
-                             "B D F H J L N P R T V X Z";
+                "B D F H J L N P R T V X Z";
 
         assertEquals(AutoKey.encrypt(plainText, " paSSword "), example1);
         assertEquals(AutoKey.decrypt(example1,Main.onlyLowerLetters(" paSSword ")),plainText);
