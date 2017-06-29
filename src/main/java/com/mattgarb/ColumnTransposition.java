@@ -6,7 +6,7 @@ import java.util.Arrays;
 
 
 /**
- * Created by mattg on 5/11/2017.
+ * Created by Matt Garber on 5/11/2017.
  * Column transposition cipher is a transposition cipher.
  */
 public abstract class ColumnTransposition {
@@ -35,6 +35,8 @@ public abstract class ColumnTransposition {
 
     /**
      * TODO more efficient sorted indexs?
+     * Return the index location for the sorted array.
+     * Array must be [0,26)
      * @param columnOrders Integer[] to sort
      * @return Sorted Integer[].
      */
@@ -78,9 +80,9 @@ public abstract class ColumnTransposition {
     }
 
     public static String decrypt(String cipherText, Integer[] columnOrders) {
-        if(columnOrders.length == 0 || cipherText.length() == 0) return cipherText;
         String cleanText = cipherText.toUpperCase().replaceAll("[^A-Z]","");
-        Integer[] indexs = reverse(sortedIndexs(columnOrders));
+        if(columnOrders.length == 0 || cleanText.length() == 0) return cipherText;
+        Integer[] indexs = sortedIndexs(sortedIndexs(columnOrders));
         ReversePad pad = new ReversePad(cleanText, indexs.length);
         pad.decrypt(indexs);
         return Route.cipherFormat(pad.toString());
@@ -99,7 +101,7 @@ public abstract class ColumnTransposition {
             for(int i = 0; i < text.length(); i++) {
                 this.pad[i%numberOfColumns][(int)Math.floor(i/numberOfColumns)] = text.charAt(i);
             }
-            char paddingChar = 'X';
+            final char paddingChar = 'X';
             for(int i = text.length(); i < this.pad.length* this.pad[0].length; i++) {
                 this.pad[i % numberOfColumns][(int)Math.floor((double)i / numberOfColumns)] = paddingChar;
             }
@@ -138,23 +140,20 @@ public abstract class ColumnTransposition {
             }
         }
         /**
-         * TODO Fix Column out of order bug.
+         * Mutates this reverse pad.
          * @param columnOrders order to decrypt by.
          */
-        void decrypt(Integer[] columnOrders) {
-            System.out.println(this.toString());
-            System.out.println(Arrays.toString(columnOrders));
+        void decrypt(final Integer[] columnOrders) {
             char[][] swapPad = new char[this.reversePad.length][this.reversePad[0].length];
             for(int i = 0; i < reversePad.length; i++) swapPad[i] = this.reversePad[columnOrders[i]];
             this.reversePad = swapPad;
-            System.out.println(this.toString());
         }
         @Override
         public String toString() {
             StringBuilder out = new StringBuilder(this.reversePad.length * this.reversePad[0].length);
             for(int i = 0; i < this.reversePad[0].length; i++) {
                 for (char[] column : reversePad) {
-                    if (column[i] != '\u0000') out.append(column[i]);
+                    if (column[i] != '\u0000') out.append(column[i]); // if not null char
                 }
             }
             return out.toString();

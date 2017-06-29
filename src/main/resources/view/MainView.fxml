@@ -14,6 +14,7 @@
                <FXCollections fx:factory="observableArrayList">
                   <String fx:value="Rotation" />
                   <String fx:value="Route" />
+                  <String fx:value="Column" />
                   <String fx:value="Base64" />
                   <String fx:value="Vigenere" />
                   <String fx:value="AutoKey" />

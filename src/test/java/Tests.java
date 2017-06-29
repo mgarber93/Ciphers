@@ -57,10 +57,8 @@ public class Tests {
     public void testColumnTranspotions() {
         String plain = "WHICH WRIST WATCH ESARE SWISS WRIST WATCH ESXXX";
         String cipher ="HTHES THXHR ASWRA SCSCR SSCXW WWESW WEIIT AIITX";
-        assertEquals("encrypt by array",cipher, ColumnTransposition.encrypt(plain,
-                new Integer[]{4, 2, 5, 3, 1}));
-        assertEquals("preshared keyword",cipher,ColumnTransposition.encrypt(plain, "dbECA"));
-        //failing test!
+        assertEquals("preshared keyword",cipher, ColumnTransposition.encrypt(plain, "dbECA"));
+        assertEquals("encrypt by array",cipher, ColumnTransposition.encrypt(plain, new Integer[]{4, 2, 5, 3, 1}));
         assertEquals("decrypt by array", plain, ColumnTransposition.decrypt(cipher, new Integer[]{4, 2, 5, 3, 1}));
     }
 
@@ -87,8 +85,7 @@ public class Tests {
                 " late August. This week of the hottest weather in the summer is named the Dog Days after the star.";
 
         String blankMapIn =  "A B C D E F G H I J K L M N O P Q R S T U V W X Y Z";
-        String blankMapOut = "A C E G I K M O Q S U W Y " +
-                "B D F H J L N P R T V X Z";
+        String blankMapOut = "A C E G I K M O Q S U W Y B D F H J L N P R T V X Z";
 
         assertEquals(AutoKey.encrypt(plainText, " paSSword "), example1);
         assertEquals(AutoKey.decrypt(example1,Main.onlyLowerLetters(" paSSword ")),plainText);

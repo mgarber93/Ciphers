@@ -76,8 +76,9 @@ public class Main extends Application {
         }
         passSet.forEach(e -> {
             Integer[] scores = new Integer[2];
-            scores[0] = testFast(Vigenere.decrypt(str,e));
-            scores[1] = testFast(AutoKey.decrypt(str,e));
+            scores[0] = testFast(Vigenere.decrypt(str, e));
+            scores[1] = testFast(AutoKey.decrypt(str, e));
+            //scores[2] = testFast(ColumnTransposition.decrypt(str, e));
             cipherMap.put(e, scores);
         });
 
@@ -103,16 +104,16 @@ public class Main extends Application {
                 high = rotationScores[i];
             }
         }
-        if(result.getValue()[0] > high) {
-            index = 26;
-            high = result.getValue()[0];
-        }
-        if(result.getValue()[1] > high) {
-            index = 27;
+        for (int i = 0; i < result.getValue().length; i++) {
+            if(result.getValue()[i] > high) {
+                index = 26 + i;
+                high = result.getValue()[i];
+            }
         }
 
-        return index == 26 ? "Vigenere: " + result.getKey() : index == 27 ? "AutoKey: " + result.getKey() :
-                "Rotation: " + index;
+
+        return index == 26 ? "Vigenere: " + result.getKey() : index == 27 ? "AutoKey: " + result.getKey()
+                : index == 28 ? "Column: " + result.getKey() : "Rotation: " + index;
     }
 
     /**
