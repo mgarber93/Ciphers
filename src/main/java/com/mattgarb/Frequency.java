@@ -8,7 +8,7 @@ import java.util.Arrays;
 import java.util.stream.IntStream;
 
 /**
- * Created by mattgarb on 5/1/2017. Will this stay in?
+ * Created by mattgarb on 5/1/2017.
  * Frequency stores the frequency of each character used in a text as an array of ints.
  * Frequency can cast toString or toPieChart, possibly more in the future.
  */

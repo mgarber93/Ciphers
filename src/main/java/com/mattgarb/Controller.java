@@ -90,8 +90,9 @@ public class Controller {
                 : encryptionMode.getSelectionModel().getSelectedItem();
         switch (encryption) {
             case "Rotation":
-                PlainText.setText(Main.rotate(CipherText.getText(),
-                        26 - RotNumber.getSelectionModel().getSelectedIndex()));
+                int rotation = 26 - RotNumber.getSelectionModel().getSelectedIndex();
+                RotationCipher rotationCipher = new RotationCipher.Builder().setRotationKey(rotation).build();
+                PlainText.setText(rotationCipher.decrypt(CipherText.getText()));
                 break;
             case "Vigenere":
                 PlainText.setText(Vigenere.decrypt(CipherText.getText(),Main.onlyLowerLetters(Psk.getText())));
@@ -119,7 +120,9 @@ public class Controller {
                 : encryptionMode.getSelectionModel().getSelectedItem();
         switch (encryption) {
             case "Rotation":
-                CipherText.setText(Main.rotate(PlainText.getText(),RotNumber.getSelectionModel().getSelectedIndex()));
+                int rotation = RotNumber.getSelectionModel().getSelectedIndex();
+                RotationCipher rotationCipher = new RotationCipher.Builder().setRotationKey(rotation).build();
+                PlainText.setText(rotationCipher.encrypt(PlainText.getText()));
                 break;
             case "Vigenere":
                 CipherText.setText(Vigenere.encrypt(PlainText.getText(),Main.onlyLowerLetters(Psk.getText())));

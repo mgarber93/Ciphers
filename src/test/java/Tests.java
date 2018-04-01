@@ -11,16 +11,22 @@ public class Tests {
 
     @Test
     public void testRot() {
-
         String str13 = "Uryyb Jbeyq guvf vf na rknzcyr bs ebg 13.";
         String str14 = "Vszzc Kcfzr hvwg wg ob sloadzs ct fch 14.";
         String str20 = "[]uxezdb a kyLKLauixzed !#$!# XZUAUBL UEMXZA lin 20";
-        assertEquals("", Main.rotate("",13));
-        assertEquals(str13,Main.rotate(str13,0));
-        assertEquals(str13,Main.rotate(str13,26));
-        assertEquals(str13,Main.rotate("Hello World this is an example of rot 13.",13));
-        assertEquals(str14,Main.rotate("Hello World this is an example of rot 14.",14));
-        assertEquals(str20,Main.rotate("[]adkfjh g qeRQRgaodfkj !#$!# DFAGAHR AKSDFG rot 20",20));
+
+        RotationCipher rotationCipher = new RotationCipher.Builder().setRotationKey(13).build();
+        RotationCipher rotationCipher2 = new RotationCipher.Builder().setRotationKey(0).build();
+        RotationCipher rotationCipher3 = new RotationCipher.Builder().setRotationKey(26).build();
+        RotationCipher rotationCipher14 = new RotationCipher.Builder().setRotationKey(14).build();
+        RotationCipher rotationCipher20 = new RotationCipher.Builder().setRotationKey(20).build();
+
+        assertEquals("", rotationCipher.encrypt(""));
+        assertEquals(str13, rotationCipher2.encrypt(str13));
+        assertEquals(str13, rotationCipher3.encrypt(str13));
+        assertEquals(str13, rotationCipher.encrypt("Hello World this is an example of rot 13."));
+        assertEquals(str14, rotationCipher14.encrypt("Hello World this is an example of rot 14."));
+        assertEquals(str20, rotationCipher20.encrypt("[]adkfjh g qeRQRgaodfkj !#$!# DFAGAHR AKSDFG rot 20"));
     }
 
 
@@ -97,7 +103,9 @@ public class Tests {
                 blankMapOut.toLowerCase(),""));
     }
 
-    @Test
+    /**
+     * @todo Reimplement this feature
+     */
     public void testBruteForce() {
         //set up passSet and wordSet
         new Main.ImportSets().run();

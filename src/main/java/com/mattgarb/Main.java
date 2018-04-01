@@ -10,6 +10,7 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.util.*;
+import java.util.stream.IntStream;
 
 public class Main extends Application {
 
@@ -18,7 +19,7 @@ public class Main extends Application {
 
     @Override
     public void start(Stage primaryStage) throws Exception{
-        new Thread(new ImportSets()).start();
+        // new Thread(new ImportSets()).start();
         Parent root = FXMLLoader.load(getClass().getResource("../../view/MainView.fxml"));
         primaryStage.setTitle("Ciphers");
         Scene scene = new Scene(root, 1000, 700);
@@ -28,20 +29,6 @@ public class Main extends Application {
 
     public static void main(String[] args) {
         launch(args);
-    }
-
-    public static String rotate(final String plainText, final Integer Rotation) {
-        StringBuilder sb = new StringBuilder(plainText.length());
-        plainText.chars().parallel().map(e -> {
-            if(e >= 65 && e <= 90){
-                return (e - 65 + Rotation) % 26 + 65;
-            } else if(e >= 97 && e <= 122)  {
-                return (e - 97 + Rotation) % 26 + 97;
-            } else {
-                return e;
-            }
-        }).forEachOrdered(e -> sb.append((char)e));
-        return sb.toString();
     }
 
     public static String base64(String plainText) {
@@ -70,10 +57,13 @@ public class Main extends Application {
         String str = strText.length() > 500 ? strText.substring(0,500) : strText;
 
         Map<String,Integer[]> cipherMap = new HashMap<>();
-        Integer[] rotationScores = new Integer[26];
-        for(int i = 0; i < 26; i++) {
-            rotationScores[i] = testFast(rotate(str,26 - i));
-        }
+
+        Integer[] rotationScores = (Integer[]) IntStream.range(0, 26)
+                .mapToObj(rotation -> new RotationCipher.Builder().setRotationKey(rotation).build())
+                .mapToInt(rotationCipher -> testFast(rotationCipher.decrypt(str)))
+                .boxed()
+                .toArray();
+
         passSet.forEach(e -> {
             Integer[] scores = new Integer[2];
             scores[0] = testFast(Vigenere.decrypt(str, e));
@@ -111,7 +101,6 @@ public class Main extends Application {
             }
         }
 
-
         return index == 26 ? "Vigenere: " + result.getKey() : index == 27 ? "AutoKey: " + result.getKey()
                 : index == 28 ? "Column: " + result.getKey() : "Rotation: " + index;
     }
@@ -141,11 +130,12 @@ public class Main extends Application {
      * challenge. The best solution I found has been to throw out all words smaller than 3 chars.
      * Takes about 8s on my machine.
      */
-    public static class ImportSets implements Runnable{
+    public static class ImportSets implements Runnable {
         @Override
         public void run() {
-            try(BufferedReader reader = new BufferedReader( new InputStreamReader( getClass()
-                    .getResourceAsStream("resources/Dictionary.txt")))){
+            try(BufferedReader reader = new BufferedReader(new InputStreamReader(ImportSets.class
+                    .getResourceAsStream("resources/wordlist/Dictionary.txt")))
+            ){
                 while (reader.ready()) {
                     String[] words = reader.readLine()
                             .replaceAll("[^a-zA-Z]", " ")
