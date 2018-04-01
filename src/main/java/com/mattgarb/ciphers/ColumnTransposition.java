@@ -1,36 +1,42 @@
-package com.mattgarb;
-
+package com.mattgarb.ciphers;
 
 import java.util.ArrayList;
-import java.util.Arrays;
-
 
 /**
  * Created by Matt Garber on 5/11/2017.
  * Column transposition cipher is a transposition cipher.
  */
-public abstract class ColumnTransposition {
+public class ColumnTransposition implements Cipher<String> {
+    private final Integer[] columnOrders;
 
-    public static String encrypt(final String plainText, final String psk) {
-        if(plainText.length() == 0 || psk.length() == 0) return plainText;
-        ArrayList<Integer> columnOrder = new ArrayList<>();
-        psk.toUpperCase().replaceAll("[^A-Z]","")
-                .chars()
-                .map(e -> (e - 65))
-                .forEachOrdered(columnOrder::add);
-        Integer[] cols = columnOrder.toArray(new Integer[columnOrder.size()]);
-        return encrypt(plainText, cols );
+    public static class Builder {
+        private Integer[] columnOrders;
+
+        public Builder() {
+        }
+
+        public Builder setColumnOrder(final String psk) {
+            ArrayList<Integer> columnOrder = new ArrayList<>();
+            psk.toUpperCase().replaceAll("[^A-Z]","")
+                    .chars()
+                    .map(e -> (e - 65))
+                    .forEachOrdered(columnOrder::add);
+            this.columnOrders = columnOrder.toArray(new Integer[columnOrder.size()]);
+            return this;
+        }
+
+        public Builder setColumnOrder(final Integer[] columnOrders) {
+            this.columnOrders = columnOrders;
+            return this;
+        }
+
+        public ColumnTransposition build() {
+            return new ColumnTransposition(this);
+        }
     }
 
-    static String decrypt(final String plainText, final String psk) {
-        if(plainText.length() == 0 || psk.length() == 0) return plainText;
-        ArrayList<Integer> columnOrder = new ArrayList<>();
-        psk.toUpperCase().replaceAll("[^A-Z]","")
-                .chars()
-                .map(e -> (e - 65))
-                .forEachOrdered(columnOrder::add);
-        Integer[] cols = columnOrder.toArray(new Integer[columnOrder.size()]);
-        return decrypt(plainText, cols );
+    ColumnTransposition(Builder builder) {
+        this.columnOrders = toSortedIndices(builder.columnOrders);
     }
 
     /**
@@ -40,7 +46,7 @@ public abstract class ColumnTransposition {
      * @param columnOrders Integer[] to sort
      * @return Sorted Integer[].
      */
-    private static Integer[] sortedIndexs(Integer[] columnOrders) {
+    private static Integer[] toSortedIndices(Integer[] columnOrders) {
         ArrayList<Integer> indexs = new ArrayList<>();
         for(int i = 0; i < 26; i++ ) {
             for(int j = 0 ; j < columnOrders.length; j++) {
@@ -67,28 +73,26 @@ public abstract class ColumnTransposition {
      * and concat-ing the columns in the order given by columnOrders (which can also be a word)
      *
      * @param plainText to encrypt.
-     * @param columnOrders the Pre Shared Key must be less than 26, left associative.
      * @return cipthertext.
      */
-    public static String encrypt(final String plainText, final Integer[] columnOrders) {
+    public String encrypt(final String plainText) {
         if(columnOrders.length == 0 || plainText.length() == 0) return plainText;
         String cleanText = plainText.toUpperCase().replaceAll("[^A-Z]","");
-        Integer[] indexs = sortedIndexs(columnOrders);
-        Pad pad = new Pad(cleanText,indexs.length);
-        pad.encrypt(indexs);
+        Pad pad = new Pad(cleanText, columnOrders.length);
+        pad.encrypt(columnOrders);
         return Route.cipherFormat(pad.toString());
     }
 
-    public static String decrypt(String cipherText, Integer[] columnOrders) {
+    public String decrypt(String cipherText) {
         String cleanText = cipherText.toUpperCase().replaceAll("[^A-Z]","");
         if(columnOrders.length == 0 || cleanText.length() == 0) return cipherText;
-        Integer[] indexs = sortedIndexs(sortedIndexs(columnOrders));
-        ReversePad pad = new ReversePad(cleanText, indexs.length);
-        pad.decrypt(indexs);
+        Integer[] reversedIndices = toSortedIndices(columnOrders);
+        ReversePad pad = new ReversePad(cleanText, reversedIndices.length);
+        pad.decrypt(reversedIndices);
         return Route.cipherFormat(pad.toString());
     }
 
-    static class Pad{
+    static class Pad {
         char[][] pad;
         /**
          * Pad constructor is used for encrypt
@@ -127,7 +131,7 @@ public abstract class ColumnTransposition {
         }
     }
 
-    static class ReversePad{
+    static class ReversePad {
         char[][] reversePad;
         ReversePad(String text, Integer numberOfColumns) {
             this.reversePad = new char[numberOfColumns][(int) Math.ceil((double)text.length()/numberOfColumns)];

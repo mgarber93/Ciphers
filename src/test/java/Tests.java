@@ -1,8 +1,5 @@
 import com.mattgarb.*;
-import com.mattgarb.ciphers.AutoKey;
-import com.mattgarb.ciphers.CipherFactory;
-import com.mattgarb.ciphers.RotationCipher;
-import com.mattgarb.ciphers.Vigenere;
+import com.mattgarb.ciphers.*;
 import org.junit.Test;
 
 import static org.junit.Assert.assertEquals;
@@ -55,21 +52,30 @@ public class Tests {
         assertEquals(dec4,Main.base64(enc4));
         assertEquals(dec5,Main.base64(enc5));
     }
+
     @Test
     public void testRoute() {
         String plain = "abort the mission, you have been spotted";
         String invCipher = "ABORT THEMI SSION YOUHA VEBEE NSPOT TEDXX";
         String cipher = "ATSYV NTBHS OESEO EIUBP DRMOH EOXTI NAETX";
-        assertEquals(cipher,Route.encrypt(plain, 5));
-        assertEquals(invCipher,Route.decrypt(cipher,5));
+        Route route5 = cipherStore.createRoute(5);
+        assertEquals(cipher, route5.encrypt(plain));
+        assertEquals(invCipher, route5.decrypt(cipher));
     }
+
     @Test
     public void testColumnTranspotions() {
         String plain = "WHICH WRIST WATCH ESARE SWISS WRIST WATCH ESXXX";
         String cipher ="HTHES THXHR ASWRA SCSCR SSCXW WWESW WEIIT AIITX";
-        assertEquals("preshared keyword",cipher, ColumnTransposition.encrypt(plain, "dbECA"));
-        assertEquals("encrypt by array",cipher, ColumnTransposition.encrypt(plain, new Integer[]{4, 2, 5, 3, 1}));
-        assertEquals("decrypt by array", plain, ColumnTransposition.decrypt(cipher, new Integer[]{4, 2, 5, 3, 1}));
+        ColumnTransposition columnTranspositionText = new ColumnTransposition.Builder()
+                .setColumnOrder("dbECA")
+                .build();
+        ColumnTransposition columnTranspositionArray = new ColumnTransposition.Builder()
+                .setColumnOrder(new Integer[]{4, 2, 5, 3, 1})
+                .build();
+        assertEquals("preshared keyword", cipher, columnTranspositionText.encrypt(plain));
+        assertEquals("encrypt by array", cipher, columnTranspositionArray.encrypt(plain));
+        assertEquals("decrypt by array", plain, columnTranspositionArray.decrypt(cipher));
     }
 
     @Test

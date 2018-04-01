@@ -22,7 +22,7 @@ public class Main extends Application {
 
     @Override
     public void start(Stage primaryStage) throws Exception{
-        // new Thread(new ImportSets()).start();
+        new Thread(new ImportSets()).start();
         Parent root = FXMLLoader.load(getClass().getResource("../../view/MainView.fxml"));
         primaryStage.setTitle("Ciphers");
         Scene scene = new Scene(root, 1000, 700);
@@ -140,7 +140,7 @@ public class Main extends Application {
         @Override
         public void run() {
             try(BufferedReader reader = new BufferedReader(new InputStreamReader(ImportSets.class
-                    .getResourceAsStream("resources/wordlist/Dictionary.txt")))
+                    .getResourceAsStream("../../wordlist/Dictionary.txt")))
             ){
                 while (reader.ready()) {
                     String[] words = reader.readLine()
@@ -157,24 +157,9 @@ public class Main extends Application {
                 e.printStackTrace();
             }
             System.out.println("Words added: " + wordSet.size());
-            try(BufferedReader reader = new BufferedReader( new InputStreamReader( getClass()
-                    .getResourceAsStream("resources/Dictionary.txt")))){
-                while (reader.ready()) {
-                    String[] words = reader.readLine()
-                            .replaceAll("[^a-zA-Z]", " ")
-                            .toLowerCase()
-                            .split(" ");
-                    for(String line : words) {
-                        if(line.length()>= 3){
-                            passSet.add(line);
-                        }
-                    }
-                }
-            } catch (IOException e) {
-                System.out.println("bad path! ");
-            }
-            try(BufferedReader reader = new BufferedReader( new InputStreamReader( getClass()
-                    .getResourceAsStream("resources/worstpasswords.txt")))){
+
+            try(BufferedReader reader = new BufferedReader( new InputStreamReader(ImportSets.class
+                    .getResourceAsStream("../../wordlist/worstpasswords.txt")))){
                 while (reader.ready()) {
                     String[] words = reader.readLine()
                             .replaceAll("[^a-zA-Z]", " ")

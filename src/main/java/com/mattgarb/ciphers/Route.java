@@ -1,23 +1,47 @@
-package com.mattgarb;
+package com.mattgarb.ciphers;
 
 /**
  * Created by Matt on 5/14/2017.
  * Simple Route Transposition Cipher.
  */
-public class Route {
-    public static String encrypt(String plain, int columns) {
+public class Route implements Cipher<String> {
+    private final int columns;
+
+    public static class Builder {
+        private int columns;
+
+        public Builder() {
+        }
+
+        public Builder setColumns(int columns) {
+            this.columns = columns;
+            return this;
+        }
+
+        public Route build() {
+            return new Route(this);
+        }
+    }
+
+    private Route(Builder builder) {
+        this.columns = builder.columns;
+    }
+
+    @Override
+    public String encrypt(String plain) {
         String cleanText = plain.toUpperCase().replaceAll("[^A-Z]","");
         Pad pad = new Pad(cleanText, columns);
         return cipherFormat(pad.toString());
     }
 
-    public static String decrypt(String cipher, int columns) {
+    @Override
+    public String decrypt(String cipher) {
         String cleanText = cipher.toUpperCase().replaceAll("[^A-Z]","");
         ReversePad pad = new ReversePad(cleanText, columns);
         return cipherFormat(pad.toString());
     }
 
-    static String cipherFormat(String str) {
+    public static String cipherFormat(String str) {
         if(str.length() == 0) return str;
         StringBuilder sb = new StringBuilder(str.length()+str.length()/5);
         sb.append(str.charAt(0));
@@ -31,6 +55,7 @@ public class Route {
 
     static class Pad{
         char[][] pad;
+
         /**
          * Pad constructor is used for encrypt
          * Pad = [cols][rows]
@@ -47,6 +72,7 @@ public class Route {
                 this.pad[i % numberOfColumns][(int)Math.floor((double)i / numberOfColumns)] = paddingChar;
             }
         }
+
         @Override
         public String toString() {
             StringBuilder out = new StringBuilder(this.pad.length * this.pad[0].length);
@@ -60,6 +86,7 @@ public class Route {
     }
     static class ReversePad{
         char[][] reversePad;
+
         ReversePad(String text, Integer numberOfColumns) {
             this.reversePad = new char[numberOfColumns][(int) Math.ceil((double)text.length()/numberOfColumns)];
             int index = 0;
@@ -70,6 +97,7 @@ public class Route {
                 }
             }
         }
+
         @Override
         public String toString() {
             StringBuilder out = new StringBuilder(this.reversePad.length * this.reversePad[0].length);

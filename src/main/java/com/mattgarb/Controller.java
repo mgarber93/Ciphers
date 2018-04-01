@@ -1,9 +1,7 @@
 package com.mattgarb;
 
 
-import com.mattgarb.ciphers.AutoKey;
-import com.mattgarb.ciphers.RotationCipher;
-import com.mattgarb.ciphers.Vigenere;
+import com.mattgarb.ciphers.*;
 import javafx.fxml.FXML;
 import javafx.scene.chart.PieChart;
 import javafx.scene.control.Button;
@@ -33,10 +31,10 @@ public class Controller {
     public Button Stats;
     public HBox Bottom;
     private Boolean stats;
+    private final CipherFactory cipherStore = new CipherFactory.Builder().build();
 
     @FXML
     public void initialize() {
-
         stats = false;
         Bottom.setMaxHeight(400);
 
@@ -91,64 +89,24 @@ public class Controller {
     private void decrypt() {
         String encryption = encryptionMode.getSelectionModel().isEmpty() ? "none"
                 : encryptionMode.getSelectionModel().getSelectedItem();
-        switch (encryption) {
-            case "Rotation":
-                int rotation = 26 - RotNumber.getSelectionModel().getSelectedIndex();
-                RotationCipher rotationCipher = new RotationCipher.Builder().setRotationKey(rotation).build();
-                PlainText.setText(rotationCipher.decrypt(CipherText.getText()));
-                break;
-            case "Vigenere":
-                Vigenere vigenere = new Vigenere.Builder().setKey(Main.onlyLowerLetters(Psk.getText())).build();
-                PlainText.setText(vigenere.decrypt(CipherText.getText()));
-                break;
-            case "AutoKey":
-                AutoKey autoKey = new AutoKey.Builder().setKey(Main.onlyLowerLetters(Psk.getText())).build();
-                PlainText.setText(autoKey.decrypt(CipherText.getText()));
-                break;
-            case "Base64":
-                PlainText.setText(Main.base64Decode(CipherText.getText()));
-                break;
-            case "Column":
-                PlainText.setText(ColumnTransposition.decrypt(CipherText.getText(),Psk.getText()));
-                break;
-            case "Route":
-                PlainText.setText(Route.decrypt(CipherText.getText(),RotNumber.getSelectionModel().getSelectedIndex()));
-                break;
-            default:
-                PlainText.setText(CipherText.getText());
-        }
+        PlainText.setText(cipherStore.decrypt(
+                encryption,
+                CipherText.getText(),
+                26 - RotNumber.getSelectionModel().getSelectedIndex(),
+                Psk.getText()
+        ));
         updateCharts();
     }
 
     private void encrypt() {
         String encryption = encryptionMode.getSelectionModel().isEmpty() ? "none"
                 : encryptionMode.getSelectionModel().getSelectedItem();
-        switch (encryption) {
-            case "Rotation":
-                int rotation = RotNumber.getSelectionModel().getSelectedIndex();
-                RotationCipher rotationCipher = new RotationCipher.Builder().setRotationKey(rotation).build();
-                PlainText.setText(rotationCipher.encrypt(PlainText.getText()));
-                break;
-            case "Vigenere":
-                Vigenere vigenere = new Vigenere.Builder().setKey(Main.onlyLowerLetters(Psk.getText())).build();
-                CipherText.setText(vigenere.encrypt(PlainText.getText()));
-                break;
-            case "AutoKey":
-                AutoKey autoKey = new AutoKey.Builder().setKey(Main.onlyLowerLetters(Psk.getText())).build();
-                CipherText.setText(autoKey.encrypt(PlainText.getText()));
-                break;
-            case "Base64":
-                CipherText.setText(Main.base64(PlainText.getText()));
-                break;
-            case "Column":
-                CipherText.setText(ColumnTransposition.encrypt(PlainText.getText(),Psk.getText()));
-                break;
-            case "Route":
-                CipherText.setText(Route.encrypt(PlainText.getText(),RotNumber.getSelectionModel().getSelectedIndex()));
-                break;
-            default:
-                CipherText.setText(PlainText.getText());
-        }
+        CipherText.setText(cipherStore.encrypt(
+                encryption,
+                PlainText.getText(),
+                RotNumber.getSelectionModel().getSelectedIndex(),
+                Psk.getText()
+        ));
         updateCharts();
     }
 
