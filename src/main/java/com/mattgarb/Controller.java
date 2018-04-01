@@ -1,6 +1,9 @@
 package com.mattgarb;
 
 
+import com.mattgarb.ciphers.AutoKey;
+import com.mattgarb.ciphers.RotationCipher;
+import com.mattgarb.ciphers.Vigenere;
 import javafx.fxml.FXML;
 import javafx.scene.chart.PieChart;
 import javafx.scene.control.Button;
@@ -95,10 +98,12 @@ public class Controller {
                 PlainText.setText(rotationCipher.decrypt(CipherText.getText()));
                 break;
             case "Vigenere":
-                PlainText.setText(Vigenere.decrypt(CipherText.getText(),Main.onlyLowerLetters(Psk.getText())));
+                Vigenere vigenere = new Vigenere.Builder().setKey(Main.onlyLowerLetters(Psk.getText())).build();
+                PlainText.setText(vigenere.decrypt(CipherText.getText()));
                 break;
             case "AutoKey":
-                PlainText.setText(AutoKey.decrypt(CipherText.getText(),Main.onlyLowerLetters(Psk.getText())));
+                AutoKey autoKey = new AutoKey.Builder().setKey(Main.onlyLowerLetters(Psk.getText())).build();
+                PlainText.setText(autoKey.decrypt(CipherText.getText()));
                 break;
             case "Base64":
                 PlainText.setText(Main.base64Decode(CipherText.getText()));
@@ -125,10 +130,12 @@ public class Controller {
                 PlainText.setText(rotationCipher.encrypt(PlainText.getText()));
                 break;
             case "Vigenere":
-                CipherText.setText(Vigenere.encrypt(PlainText.getText(),Main.onlyLowerLetters(Psk.getText())));
+                Vigenere vigenere = new Vigenere.Builder().setKey(Main.onlyLowerLetters(Psk.getText())).build();
+                CipherText.setText(vigenere.encrypt(PlainText.getText()));
                 break;
             case "AutoKey":
-                CipherText.setText(AutoKey.encrypt(PlainText.getText(),Main.onlyLowerLetters(Psk.getText())));
+                AutoKey autoKey = new AutoKey.Builder().setKey(Main.onlyLowerLetters(Psk.getText())).build();
+                CipherText.setText(autoKey.encrypt(PlainText.getText()));
                 break;
             case "Base64":
                 CipherText.setText(Main.base64(PlainText.getText()));

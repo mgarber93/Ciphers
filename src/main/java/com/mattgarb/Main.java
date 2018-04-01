@@ -1,5 +1,8 @@
 package com.mattgarb;
 
+import com.mattgarb.ciphers.AutoKey;
+import com.mattgarb.ciphers.CipherFactory;
+import com.mattgarb.ciphers.Vigenere;
 import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
@@ -55,19 +58,22 @@ public class Main extends Application {
     public static String parallelBruteForce(String strText) {
         strText = strText.toLowerCase().replaceAll("[^a-z ]"," ");
         String str = strText.length() > 500 ? strText.substring(0,500) : strText;
+        CipherFactory store = new CipherFactory.Builder().build();
 
         Map<String,Integer[]> cipherMap = new HashMap<>();
 
         Integer[] rotationScores = (Integer[]) IntStream.range(0, 26)
-                .mapToObj(rotation -> new RotationCipher.Builder().setRotationKey(rotation).build())
+                .mapToObj(store::createRotation)
                 .mapToInt(rotationCipher -> testFast(rotationCipher.decrypt(str)))
                 .boxed()
                 .toArray();
 
         passSet.forEach(e -> {
             Integer[] scores = new Integer[2];
-            scores[0] = testFast(Vigenere.decrypt(str, e));
-            scores[1] = testFast(AutoKey.decrypt(str, e));
+            Vigenere vigenere = new Vigenere.Builder().setKey(e).build();
+            AutoKey autoKey = new AutoKey.Builder().setKey(e).build();
+            scores[0] = testFast(vigenere.decrypt(str));
+            scores[1] = testFast(autoKey.decrypt(str));
             //scores[2] = testFast(ColumnTransposition.decrypt(str, e));
             cipherMap.put(e, scores);
         });

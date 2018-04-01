@@ -1,4 +1,4 @@
-package com.mattgarb;
+package com.mattgarb.ciphers;
 
 public class RotationCipher implements Cipher<String> {
     private final Integer rotationKey;

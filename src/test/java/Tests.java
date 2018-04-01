@@ -1,4 +1,8 @@
 import com.mattgarb.*;
+import com.mattgarb.ciphers.AutoKey;
+import com.mattgarb.ciphers.CipherFactory;
+import com.mattgarb.ciphers.RotationCipher;
+import com.mattgarb.ciphers.Vigenere;
 import org.junit.Test;
 
 import static org.junit.Assert.assertEquals;
@@ -8,18 +12,19 @@ import static org.junit.Assert.assertEquals;
  * JUnit 4.11 test coverage.
  */
 public class Tests {
+    private CipherFactory cipherStore = new CipherFactory.Builder().build();
 
     @Test
-    public void testRot() {
+    public void testRotationCipher() {
         String str13 = "Uryyb Jbeyq guvf vf na rknzcyr bs ebg 13.";
         String str14 = "Vszzc Kcfzr hvwg wg ob sloadzs ct fch 14.";
         String str20 = "[]uxezdb a kyLKLauixzed !#$!# XZUAUBL UEMXZA lin 20";
 
-        RotationCipher rotationCipher = new RotationCipher.Builder().setRotationKey(13).build();
-        RotationCipher rotationCipher2 = new RotationCipher.Builder().setRotationKey(0).build();
-        RotationCipher rotationCipher3 = new RotationCipher.Builder().setRotationKey(26).build();
-        RotationCipher rotationCipher14 = new RotationCipher.Builder().setRotationKey(14).build();
-        RotationCipher rotationCipher20 = new RotationCipher.Builder().setRotationKey(20).build();
+        RotationCipher rotationCipher = cipherStore.createRotation(13);
+        RotationCipher rotationCipher2 = cipherStore.createRotation(0);
+        RotationCipher rotationCipher3 = cipherStore.createRotation(26);
+        RotationCipher rotationCipher14 = cipherStore.createRotation(14);
+        RotationCipher rotationCipher20 = cipherStore.createRotation(20);
 
         assertEquals("", rotationCipher.encrypt(""));
         assertEquals(str13, rotationCipher2.encrypt(str13));
@@ -28,7 +33,6 @@ public class Tests {
         assertEquals(str14, rotationCipher14.encrypt("Hello World this is an example of rot 14."));
         assertEquals(str20, rotationCipher20.encrypt("[]adkfjh g qeRQRgaodfkj !#$!# DFAGAHR AKSDFG rot 20"));
     }
-
 
     //https://en.wikipedia.org/wiki/Base64
     @Test
@@ -77,9 +81,12 @@ public class Tests {
         String out2 = "Alp dhhv ylalh Dtfpyd, lzzs vycdr ld hoi Ozu Zxlc, wz fctuox lyr ymdpg omrs wu xsp grc ty " +
                 "zhxp Linyde. Homd hslo zq hoi szhaide kleessy my evl wfxalv td bhqpo hoi Ozu Kejd omxpc hoi deoy.";
 
+        Vigenere vigenere1 = cipherStore.createVigenere("PASSword");
+        Vigenere vigenere2 = cipherStore.createVigenere("heLLo ");
+
         //psk case insensitive
-        assertEquals(out1,Vigenere.encrypt(in1, "PASSword"));
-        assertEquals(out2,Vigenere.encrypt(in1," heLLo "));
+        assertEquals(out1, vigenere1.encrypt(in1));
+        assertEquals(out2, vigenere2.encrypt(in1));
     }
 
     @Test
@@ -93,14 +100,19 @@ public class Tests {
         String blankMapIn =  "A B C D E F G H I J K L M N O P Q R S T U V W X Y Z";
         String blankMapOut = "A C E G I K M O Q S U W Y B D F H J L N P R T V X Z";
 
-        assertEquals(AutoKey.encrypt(plainText, " paSSword "), example1);
-        assertEquals(AutoKey.decrypt(example1,Main.onlyLowerLetters(" paSSword ")),plainText);
+        AutoKey autoKey1 = cipherStore.createAutoKey(" paSSword ");
+        assertEquals(autoKey1.encrypt(plainText), example1);
+        assertEquals(plainText, autoKey1.decrypt(example1));
 
-        assertEquals(blankMapOut, AutoKey.encrypt(blankMapIn,""));
-        assertEquals(blankMapOut.toLowerCase(), AutoKey.encrypt(blankMapIn.toLowerCase(),""));
-        assertEquals(blankMapOut,blankMapIn, AutoKey.decrypt(blankMapOut,""));
-        assertEquals(blankMapOut.toLowerCase(),blankMapIn.toLowerCase(),AutoKey.decrypt(
-                blankMapOut.toLowerCase(),""));
+        AutoKey autoKeyBlank = cipherStore.createAutoKey("");
+        assertEquals(blankMapOut, autoKeyBlank.encrypt(blankMapIn));
+        assertEquals(blankMapOut.toLowerCase(), autoKeyBlank.encrypt(blankMapIn.toLowerCase()));
+        assertEquals(blankMapOut, blankMapIn, autoKeyBlank.decrypt(blankMapOut));
+        assertEquals(
+                blankMapOut.toLowerCase(),
+                blankMapIn.toLowerCase(),
+                autoKeyBlank.decrypt(blankMapOut.toLowerCase())
+        );
     }
 
     /**

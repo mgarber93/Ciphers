@@ -1,4 +1,4 @@
-package com.mattgarb;
+package com.mattgarb.ciphers;
 
 public interface Cipher<T> {
     T encrypt(T plainText);

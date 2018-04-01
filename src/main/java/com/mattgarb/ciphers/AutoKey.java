@@ -1,12 +1,40 @@
-package com.mattgarb;
+package com.mattgarb.ciphers;
+
+import com.mattgarb.Main;
 
 /**
  * Created by mattg on 5/11/2017.
  * AutoKey polyalphabetic cipher. Arguably more secure than Vigenere.
  */
-public class AutoKey {
-    public static String encrypt(String str, String pskText) {
-        if(!"".equals(pskText))return Vigenere.encrypt(str, pskText + str);
+public class AutoKey implements Cipher<String> {
+    private final String key;
+
+    public static class Builder {
+        private String key;
+
+        public Builder() {
+        }
+
+        public Builder setKey(String key) {
+            this.key = Main.onlyLowerLetters(key);
+            return this;
+        }
+
+        public AutoKey build() {
+            return new AutoKey(this);
+        }
+    }
+
+    AutoKey(Builder builder) {
+        this.key = builder.key;
+    }
+
+    @Override
+    public String encrypt(final String str) {
+        if(!"".equals(key)) {
+            Vigenere vigenere = new Vigenere.Builder().setKey(key + str).build();
+            return vigenere.encrypt(str);
+        }
         //special mapping to make autoKey bijective
         StringBuilder sb = new StringBuilder(str.length());
         str.chars().map(e -> {
@@ -21,6 +49,7 @@ public class AutoKey {
         }).forEachOrdered(e -> sb.append((char)e));
         return sb.toString();
     }
+
     /**
      * If no Psk is provided, autoKey is still a bijective mapping
      * A-M maps to A - Y (even letters)
@@ -28,14 +57,15 @@ public class AutoKey {
      *
      * Inverse functions must clean their psk before passing it in.
      * @param text cipher text to decrypt
-     * @param pskText psk (if used) must be only lower case letters!
      * @return plain text
      */
-    public static String decrypt(final String text, final String pskText) {
-        if(text.length()==0) return "";
+    @Override
+    public String decrypt(final String text) {
+        if(text.length() == 0) return "";
         StringBuilder out = new StringBuilder(text.length());
+
         //special mapping to make autoKey bijective
-        if(pskText.length()==0) {
+        if(key.length() == 0) {
             text.chars().map(e -> {
                 int letter;
                 if(e >= 65 && e <= 90){
@@ -52,7 +82,7 @@ public class AutoKey {
             return out.toString();
         }
 
-        StringBuilder psk = new StringBuilder(pskText);
+        StringBuilder psk = new StringBuilder(key);
         final int[] index = {0};
         final int[] slip = {0};
 
