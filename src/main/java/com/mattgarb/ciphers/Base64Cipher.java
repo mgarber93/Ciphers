@@ -2,6 +2,9 @@ package com.mattgarb.ciphers;
 import java.util.*;
 
 public class Base64Cipher implements Cipher<String> {
+    public Base64Cipher() {
+    }
+
     @Override
     public String encrypt(String plainText) {
         Base64.Encoder encoder = Base64.getMimeEncoder();

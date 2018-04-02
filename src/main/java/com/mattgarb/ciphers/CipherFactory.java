@@ -65,7 +65,7 @@ public class CipherFactory {
                 AutoKey autoKey = new AutoKey.Builder().setKey(key).build();
                 return autoKey.encrypt(plaintext);
             case "Base64":
-                return Main.base64(plaintext);
+                return new Base64Cipher().encrypt(plaintext);
             case "Column":
                 ColumnTransposition columnTransposition = new ColumnTransposition.Builder()
                         .setColumnOrder(key)
@@ -91,7 +91,7 @@ public class CipherFactory {
                 AutoKey autoKey = new AutoKey.Builder().setKey(Main.onlyLowerLetters(key)).build();
                 return autoKey.decrypt(ciphertext);
             case "Base64":
-                return Main.base64Decode(ciphertext);
+                return new Base64Cipher().decrypt(ciphertext);
             case "Column":
                 ColumnTransposition columnTransposition = new ColumnTransposition.Builder()
                         .setColumnOrder(key)

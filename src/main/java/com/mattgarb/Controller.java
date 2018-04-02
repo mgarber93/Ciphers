@@ -1,6 +1,5 @@
 package com.mattgarb;
 
-
 import com.mattgarb.ciphers.*;
 import javafx.fxml.FXML;
 import javafx.scene.chart.PieChart;
@@ -15,12 +14,14 @@ import javafx.scene.layout.Region;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.mattgarb.ciphers.CipherFactory;
+import com.mattgarb.utilities.WordSets;
+import com.mattgarb.crackers.Cracker;
 /**
  * Controller of the main view.
  * TODO look into TextFlow instead of TextArea so I can apply styling to matched/unmatched words
  */
 public class Controller {
-
     public TextArea PlainText;
     public TextArea CipherText;
     public ComboBox<String> encryptionMode;
@@ -31,7 +32,10 @@ public class Controller {
     public Button Stats;
     public HBox Bottom;
     private Boolean stats;
+
     private final CipherFactory cipherStore = new CipherFactory.Builder().build();
+    private final WordSets wordSets = new WordSets.Builder().build();
+    private final Cracker cracker = new Cracker.Builder().setCipherFactory(cipherStore).setWordSets(wordSets).build();
 
     @FXML
     public void initialize() {
@@ -45,7 +49,7 @@ public class Controller {
         CipherText.setOnKeyReleased(e -> decrypt());
 
         Psk.setOnAction(e -> {
-            Main.passSet.add(Psk.getText().trim().toLowerCase().replaceAll("[^a-z]",""));
+            wordSets.getPasswordSet().add(Psk.getText().trim().toLowerCase().replaceAll("[^a-z]",""));
             encrypt();
         });
 
@@ -62,7 +66,7 @@ public class Controller {
         RotNumber.getSelectionModel().select(13);
 
         Crack.setOnAction(e -> {
-            String[] response = Main.parallelBruteForce(CipherText.getText()).split(":");
+            String[] response = cracker.parallelBruteForce(CipherText.getText()).split(":");
 
             if(response[0].equals("Rotation")) {
                 RotNumber.getSelectionModel().select(Integer.parseInt(response[1].trim()));
@@ -119,5 +123,4 @@ public class Controller {
         Bottom.getChildren().addAll(plainChart, region, cipherChart);
         HBox.setHgrow(region, Priority.ALWAYS);
     }
-
 }

@@ -1,5 +1,6 @@
-import com.mattgarb.*;
 import com.mattgarb.ciphers.*;
+import com.mattgarb.crackers.Cracker;
+import com.mattgarb.utilities.WordSets;
 import org.junit.Test;
 
 import static org.junit.Assert.assertEquals;
@@ -45,12 +46,14 @@ public class Tests {
         String enc5 = "any carnal pleas";
         String dec5 = "YW55IGNhcm5hbCBwbGVhcw==";
 
-        assertEquals(dec1,Main.base64(enc1));
-        assertEquals(enc1,Main.base64Decode(dec1));
-        assertEquals(dec2,Main.base64(enc2));
-        assertEquals(dec3,Main.base64(enc3));
-        assertEquals(dec4,Main.base64(enc4));
-        assertEquals(dec5,Main.base64(enc5));
+        Base64Cipher base64Cipher = new Base64Cipher();
+
+        assertEquals(dec1, base64Cipher.encrypt(enc1));
+        assertEquals(enc1, base64Cipher.decrypt(dec1));
+        assertEquals(dec2, base64Cipher.encrypt(enc2));
+        assertEquals(dec3, base64Cipher.encrypt(enc3));
+        assertEquals(dec4, base64Cipher.encrypt(enc4));
+        assertEquals(dec5, base64Cipher.encrypt(enc5));
     }
 
     @Test
@@ -121,12 +124,12 @@ public class Tests {
         );
     }
 
-    /**
-     * @todo Reimplement this feature
-     */
+    @Test
     public void testBruteForce() {
         //set up passSet and wordSet
-        new Main.ImportSets().run();
+        WordSets wordSets = new WordSets.Builder().build();
+        System.out.println("Test rejected!");
+        Cracker cracker = new Cracker.Builder().setWordSets(wordSets).setCipherFactory(cipherStore).build();
 
         String cipherText = "Alp dhhv ylalh Dtfpyd, lzzs vycdr ld hoi Ozu Zxlc, wz fctuox lyr ymdpg omrs wu xsp grc ty" +
                 " zhxp Linyde. Homd hslo zq hoi szhaide kleessy my evl wfxalv td bhqpo hoi Ozu Kejd omxpc hoi deoy.";
@@ -137,8 +140,7 @@ public class Tests {
                 "eihku tfw sytv.";
         String cipherMode2 = "AutoKey: password";
 
-
-        assertEquals(cipherMode,Main.parallelBruteForce(cipherText));
-        assertEquals(cipherMode2,Main.parallelBruteForce(autoKeyCipherText));
+        assertEquals(cipherMode, cracker.parallelBruteForce(cipherText));
+        assertEquals(cipherMode2, cracker.parallelBruteForce(autoKeyCipherText));
     }
 }
