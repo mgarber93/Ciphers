@@ -18,18 +18,18 @@ public class Tests {
         String str14 = "Vszzc Kcfzr hvwg wg ob sloadzs ct fch 14.";
         String str20 = "[]uxezdb a kyLKLauixzed !#$!# XZUAUBL UEMXZA lin 20";
 
-        RotationCipher rotationCipher = cipherStore.createRotation(13);
-        RotationCipher rotationCipher2 = cipherStore.createRotation(0);
-        RotationCipher rotationCipher3 = cipherStore.createRotation(26);
-        RotationCipher rotationCipher14 = cipherStore.createRotation(14);
-        RotationCipher rotationCipher20 = cipherStore.createRotation(20);
+        Rotation rotation = cipherStore.createRotation(13);
+        Rotation rotation2 = cipherStore.createRotation(0);
+        Rotation rotation3 = cipherStore.createRotation(26);
+        Rotation rotation14 = cipherStore.createRotation(14);
+        Rotation rotation20 = cipherStore.createRotation(20);
 
-        assertEquals("", rotationCipher.encrypt(""));
-        assertEquals(str13, rotationCipher2.encrypt(str13));
-        assertEquals(str13, rotationCipher3.encrypt(str13));
-        assertEquals(str13, rotationCipher.encrypt("Hello World this is an example of rot 13."));
-        assertEquals(str14, rotationCipher14.encrypt("Hello World this is an example of rot 14."));
-        assertEquals(str20, rotationCipher20.encrypt("[]adkfjh g qeRQRgaodfkj !#$!# DFAGAHR AKSDFG rot 20"));
+        assertEquals("", rotation.encrypt(""));
+        assertEquals(str13, rotation2.encrypt(str13));
+        assertEquals(str13, rotation3.encrypt(str13));
+        assertEquals(str13, rotation.encrypt("Hello World this is an example of rot 13."));
+        assertEquals(str14, rotation14.encrypt("Hello World this is an example of rot 14."));
+        assertEquals(str20, rotation20.encrypt("[]adkfjh g qeRQRgaodfkj !#$!# DFAGAHR AKSDFG rot 20"));
     }
 
     //https://en.wikipedia.org/wiki/Base64
@@ -124,12 +124,15 @@ public class Tests {
         );
     }
 
+    Cracker setUpCracker() {
+        //set up passSet and wordSet
+        WordSets wordSets = new WordSets.Builder().guardedBuild();
+        return new Cracker.Builder().setWordSets(wordSets).setCipherFactory(cipherStore).build();
+    }
+
     @Test
     public void testBruteForce() {
-        //set up passSet and wordSet
-        WordSets wordSets = new WordSets.Builder().build();
-        System.out.println("Test rejected!");
-        Cracker cracker = new Cracker.Builder().setWordSets(wordSets).setCipherFactory(cipherStore).build();
+        Cracker cracker = setUpCracker();
 
         String cipherText = "Alp dhhv ylalh Dtfpyd, lzzs vycdr ld hoi Ozu Zxlc, wz fctuox lyr ymdpg omrs wu xsp grc ty" +
                 " zhxp Linyde. Homd hslo zq hoi szhaide kleessy my evl wfxalv td bhqpo hoi Ozu Kejd omxpc hoi deoy.";

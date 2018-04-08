@@ -6,21 +6,80 @@ import java.io.InputStreamReader;
 import java.util.HashSet;
 import java.util.Arrays;
 
-public class WordSets implements Runnable {
-    private final HashSet<String> wordSet = new HashSet<>();
-    private final HashSet<String> passSet = new HashSet<>();
-    private HandlesPromise<WordSets> callback = null;
+public class WordSets {
+    private HashSet<String> wordSet = new HashSet<>();
+    private HashSet<String> passSet = new HashSet<>();
+    private boolean loaded = false;
 
     public WordSets(Builder builder) {
-        this.callback = builder.callback;
     }
 
     public HashSet<String> getPasswordSet() {
         return this.passSet;
     }
 
+    void setPasswordSet(HashSet<String> passSet) {
+        this.passSet = passSet;
+    }
+
     public HashSet<String> getWordSet() {
         return this.wordSet;
+    }
+
+    void setWordSet(HashSet<String> wordSet) {
+        this.wordSet = wordSet;
+    }
+
+    synchronized boolean isLoaded() {
+        return this.loaded;
+    }
+
+    synchronized void setLoaded(boolean loaded) {
+        this.loaded = loaded;
+    }
+
+    public static class Builder {
+        public Builder() {
+        }
+
+        public WordSets build() {
+            WordSets wordsets = new WordSets(this);
+            Loader loader = new Loader(wordsets);
+            new Thread(loader).start();
+            return wordsets;
+        }
+
+        public synchronized WordSets guardedBuild() {
+            WordSets wordSets = build();
+            while(!wordSets.isLoaded()) {
+                try {
+                    wait(2000);
+                } catch (InterruptedException e) {}
+            }
+            return wordSets;
+        }
+    }
+}
+
+class Loader implements Runnable {
+    private WordSets wordSets;
+    private final HashSet<String> wordSet = new HashSet<>();
+    private final HashSet<String> passSet = new HashSet<>();
+    private boolean done = false;
+
+    Loader(WordSets wordSets) {
+        this.wordSets = wordSets;
+    }
+
+    private BufferedReader createBufferedReaderFromPath(String path) {
+        return new BufferedReader(new InputStreamReader(WordSets.class.getResourceAsStream(path)));
+    }
+
+    private synchronized void update() {
+        wordSets.setWordSet(wordSet);
+        wordSets.setPasswordSet(passSet);
+        wordSets.setLoaded(true);
+        notifyAll();
     }
 
     @Override
@@ -38,12 +97,7 @@ public class WordSets implements Runnable {
                 }
             }
         } catch (IOException e) {
-            if (callback != null) {
-                callback.handleReject(e);
-                return;
-            } else {
-                e.printStackTrace();
-            }
+            e.printStackTrace();
         }
         System.out.println("Words added: " + wordSet.size());
 
@@ -56,42 +110,11 @@ public class WordSets implements Runnable {
                 passSet.addAll(Arrays.asList(words));
             }
         } catch (IOException e) {
-            if (callback != null) {
-                callback.handleReject(e);
-                return;
-            } else {
-                e.printStackTrace();
-            }
+            e.printStackTrace();
         }
         passSet.add("");
         System.out.println("Passwords added: " + passSet.size());
-
-        if (callback != null) {
-            callback.handleResolve(this);
-        }
-
-    }
-
-    private BufferedReader createBufferedReaderFromPath(String path) {
-        return new BufferedReader(new InputStreamReader(WordSets.class.getResourceAsStream(path)));
-    }
-
-    public static class Builder {
-        HandlesPromise<WordSets> callback = null;
-
-        public Builder() {
-        }
-
-        public Builder setCallback(HandlesPromise<WordSets> callback) {
-            this.callback = callback;
-            return this;
-        }
-
-        public WordSets build() {
-            WordSets wordsets = new WordSets(this);
-            new Thread(wordsets).start();
-            return wordsets;
-        }
+        update();
     }
 }
 
