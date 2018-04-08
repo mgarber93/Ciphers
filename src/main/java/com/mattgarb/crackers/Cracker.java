@@ -87,17 +87,31 @@ public class Cracker {
             }
         }
 
-        if (result != null) {
-            for (int i = 0; i < result.getValue().length; i++) {
-                if(result.getValue()[i] > high) {
-                    index = 26 + i;
-                    high = result.getValue()[i];
-                }
+        if (result == null) {
+            return "Rotation: " + index;
+        }
+
+        for (int i = 0; i < result.getValue().length; i++) {
+            if(result.getValue()[i] > high) {
+                index = 26 + i;
+                high = result.getValue()[i];
             }
         }
 
-        return index == 26 ? "Vigenere: " + result.getKey() : index == 27 ? "AutoKey: " + result.getKey()
-                : index == 28 ? "Column: " + result.getKey() : "Rotation: " + index;
+        switch (index) {
+            case 26: {
+                return "Vigenere: " + result.getKey();
+            }
+            case 27: {
+                return "AutoKey: " + result.getKey();
+            }
+            case 28: {
+                return "Column: " + result.getKey();
+            }
+            default: {
+                return "Rotation: " + index;
+            }
+        }
     }
 
     /**
