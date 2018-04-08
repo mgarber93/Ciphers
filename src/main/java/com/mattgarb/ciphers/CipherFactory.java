@@ -4,7 +4,7 @@ import java.util.HashMap;
 import com.mattgarb.Main;
 
 public class CipherFactory {
-    private final HashMap<Integer, RotationCipher> rotationCache;
+    private final HashMap<Integer, Rotation> rotationCache;
     private final HashMap<String, Vigenere> vigenereCache;
     private final HashMap<String, AutoKey> autoKeyCache;
     private final HashMap<Integer, Route> routeCache;
@@ -25,9 +25,9 @@ public class CipherFactory {
         routeCache = new HashMap<>();
     }
 
-    public RotationCipher createRotation(int rotation) {
+    public Rotation createRotation(int rotation) {
         if (!rotationCache.containsKey(rotation)) {
-            rotationCache.put(rotation, new RotationCipher.Builder().setRotationKey(rotation).build());
+            rotationCache.put(rotation, new Rotation.Builder().setRotationKey(rotation).build());
         }
         return rotationCache.get(rotation);
     }
@@ -56,7 +56,7 @@ public class CipherFactory {
     public String encrypt(String cipher, String plaintext, int rotation, String key) {
         switch (cipher) {
             case "Rotation":
-                RotationCipher rotationCipher = new RotationCipher.Builder().setRotationKey(rotation).build();
+                Rotation rotationCipher = new Rotation.Builder().setRotationKey(rotation).build();
                 return rotationCipher.encrypt(plaintext);
             case "Vigenere":
                 Vigenere vigenere = new Vigenere.Builder().setKey(key).build();
@@ -82,7 +82,7 @@ public class CipherFactory {
     public String decrypt(String cipher, String ciphertext, int rotation, String key) {
         switch (cipher) {
             case "Rotation":
-                RotationCipher rotationCipher = new RotationCipher.Builder().setRotationKey(rotation).build();
+                Rotation rotationCipher = new Rotation.Builder().setRotationKey(rotation).build();
                 return rotationCipher.decrypt(ciphertext);
             case "Vigenere":
                 Vigenere vigenere = new Vigenere.Builder().setKey(Main.onlyLowerLetters(key)).build();

@@ -1,6 +1,6 @@
 package com.mattgarb.ciphers;
 
-public class RotationCipher implements Cipher<String> {
+public class Rotation implements Cipher<String> {
     private final Integer rotationKey;
 
     public static class Builder {
@@ -11,12 +11,12 @@ public class RotationCipher implements Cipher<String> {
             return this;
         }
 
-        public RotationCipher build() {
-            return new RotationCipher(this);
+        public Rotation build() {
+            return new Rotation(this);
         }
     }
 
-    RotationCipher(Builder builder) {
+    private Rotation(Builder builder) {
         this.rotationKey = builder.rotationKey;
     }
 
